@@ -263,7 +263,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 	public function setBanned($value){
 		if($value === true){
 			$this->server->getNameBans()->addBan($this->getName(), null, null, null);
-			$this->kick("You have been banned");
+			$this->kick("You are banned!");
 		}else{
 			$this->server->getNameBans()->remove($this->getName());
 		}
@@ -1529,7 +1529,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 						if(!$this->hasEffect(Effect::JUMP) and $diff > 0.6 and $expectedVelocity < $this->speed->y and !$this->server->getAllowFlight()){
 							if($this->inAirTicks < 100){
 								$this->setMotion(new Vector3(0, $expectedVelocity, 0));
-							}elseif($this->kick("Flying is not enabled on this server")){
+							}elseif($this->kick("Fly hack detected!")){
 								$this->timings->stopTiming();
 								return false;
 							}
@@ -1627,7 +1627,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 
 				$this->uuid = Utils::dataToUUID($this->randomClientId, $this->iusername, $this->getAddress());
 
-				if(count($this->server->getOnlinePlayers()) > $this->server->getMaxPlayers() and $this->kick("disconnectionScreen.serverFull", false)){
+				if(count($this->server->getOnlinePlayers()) > $this->server->getMaxPlayers() and $this->kick("We are full! Try again.", false)){
 					break;
 				}
 
@@ -1689,11 +1689,11 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 				}
 
 				if(!$this->server->isWhitelisted(strtolower($this->getName()))){
-					$this->close($this->getLeaveMessage(), "Server is white-listed");
+					$this->close($this->getLeaveMessage(), "We are under construction.");
 
 					break;
 				}elseif($this->server->getNameBans()->isBanned(strtolower($this->getName())) or $this->server->getIPBans()->isBanned($this->getAddress())){
-					$this->close($this->getLeaveMessage(), "You are banned");
+					$this->close($this->getLeaveMessage(), "You are banned!");
 
 					break;
 				}
@@ -1708,7 +1708,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 				foreach($this->server->getOnlinePlayers() as $p){
 					if($p !== $this and strtolower($p->getName()) === strtolower($this->getName())){
 						if($p->kick("logged in from another location") === false){
-							$this->close($this->getLeaveMessage(), "Logged in from another location");
+							$this->close($this->getLeaveMessage(), "Someone  using that name is online");
 
 							$timings->stopTiming();
 							return;
@@ -2803,7 +2803,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 		$this->server->getPluginManager()->callEvent($ev = new PlayerKickEvent($this, $reason, $this->getLeaveMessage()));
 		if(!$ev->isCancelled()){
 			if($isAdmin){
-				$message = "Kicked by admin." . ($reason !== "" ? " Reason: " . $reason : "");
+				$message = "Kicked -" . ($reason !== "" ? " Reason: " . $reason : "");
 			}else{
 				if($reason === ""){
 					$message = "disconnectionScreen.noReason";
